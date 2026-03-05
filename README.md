@@ -1,0 +1,1 @@
+# kube-informer-serviceaccount
