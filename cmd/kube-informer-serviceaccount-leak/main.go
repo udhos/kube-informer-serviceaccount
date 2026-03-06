@@ -3,8 +3,10 @@ package main
 
 import (
 	"log"
+	"log/slog"
 	"os"
 	"runtime"
+	"strconv"
 	"time"
 
 	"github.com/udhos/kube-informer-serviceaccount/serviceaccountinformer"
@@ -12,6 +14,27 @@ import (
 )
 
 func main() {
+
+	//
+	// debug
+	//
+	debugStr := os.Getenv("DEBUG")
+	var debug bool
+	if debugStr != "" {
+		var errConv error
+		debug, errConv = strconv.ParseBool(debugStr)
+		if errConv != nil {
+			slog.Error("main env", "DEBUG", debugStr, "error", errConv)
+		}
+		if debug {
+			handlerOptions := &slog.HandlerOptions{
+				Level: slog.LevelDebug,
+			}
+			logger := slog.New(slog.NewTextHandler(os.Stderr, handlerOptions))
+			slog.SetDefault(logger)
+		}
+	}
+	slog.Info("main env", "DEBUG", debugStr, "debug", debug)
 
 	//
 	// interval
