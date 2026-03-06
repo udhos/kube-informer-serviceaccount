@@ -1,6 +1,6 @@
 module github.com/udhos/kube-informer-serviceaccount
 
-go 1.25.7
+go 1.26.1
 
 require (
 	github.com/udhos/kube v1.0.9

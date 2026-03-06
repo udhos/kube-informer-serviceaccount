@@ -34,6 +34,16 @@ func main() {
 	log.Printf("LABEL_SELECTOR='%s' label_selector=%s", ls, labelSelector)
 
 	//
+	// namespace
+	//
+	namespace := ""
+	ns := os.Getenv("NAMESPACE")
+	if ns != "" {
+		namespace = ns
+	}
+	log.Printf("NAMESPACE='%s' namespace=%s", ns, namespace)
+
+	//
 	// resync period
 	//
 	resyncStr := os.Getenv("RESYNC_PERIOD")
@@ -54,7 +64,7 @@ func main() {
 
 	options := serviceaccountinformer.Options{
 		Client:        clientset,
-		Namespace:     "default",
+		Namespace:     namespace,
 		LabelSelector: labelSelector,
 		OnUpdate:      onUpdate,
 		ResyncPeriod:  resync,
@@ -73,11 +83,15 @@ func main() {
 	log.Printf("informer run error: %v", errRun)
 }
 
+var update int
+
 func onUpdate(serviceAccounts []serviceaccountinformer.ServiceAccount) {
 	const me = "onUpdate"
-	log.Printf("%s: %d", me, len(serviceAccounts))
+	update++
+	log.Printf("%s: update=%d: service accounts: %d",
+		me, update, len(serviceAccounts))
 	for i, sa := range serviceAccounts {
-		log.Printf("%s: %d/%d: namespace=%s serviceAccount=%s annotations=%v",
-			me, i, len(serviceAccounts), sa.Name, sa.Namespace, sa.Annotations)
+		log.Printf("%s: update=%d %d/%d: namespace=%s serviceAccount=%s annotations=%v",
+			me, update, i, len(serviceAccounts), sa.Name, sa.Namespace, sa.Annotations)
 	}
 }
